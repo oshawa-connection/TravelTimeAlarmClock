@@ -16,7 +16,21 @@ var travelTimeSeconds : number;
 var timeNow: Date;
 var alarmSoundedToday = false;
 // 0/5 6-7 * * 1-5
-var scrapeJob:Job = schedule.scheduleJob('5,10,15,20,25,30,35,40,45 6-7 * * 1-5', async () => {
+
+
+switch (process.env.testOrProdEnv) {
+  case "test":
+      var cronString = '* * * * *';
+      console.log("test")
+    break;
+
+  default:
+    var cronString = '5,10,15,20,25,30,35,40,45 6-7 * * 1-5';  
+    console.log("production")
+    break;
+}
+
+var scrapeJob:Job = schedule.scheduleJob(cronString, async () => {
   // check google maps
   
   await scrape()
@@ -52,20 +66,34 @@ var scrapeJob:Job = schedule.scheduleJob('5,10,15,20,25,30,35,40,45 6-7 * * 1-5'
 
 async function scrape(): Promise<number> {
   var request : Request
-  var seconds  = await rp(url)
-  .then(response => {
-    
-    console.log(response["rows"][0]["elements"][0]["duration"]["value"])
-    return response["rows"][0]["elements"][0]["duration"]["value"] 
-  })
-  .catch(err => {
-    console.error(err);
-  })
-  // var testSeconds = Promise.resolve(2400);
-  // var seconds  = testSeconds.then(response => {
-  //   console.log(response)
-  //   return response
-  // })
+  var seconds : Promise<number>;
+  var testSeconds = Promise.resolve(2400);
+  switch (process.env.testOrProdEnv) {
+    case "production":
+        seconds = await rp(url)
+        .then(response => {
+          if (typeof(response) == "string") {
+            response = JSON.parse(response)
+          }
+        
+          console.log(response["rows"][0]["elements"][0]["duration"]["value"]);
+          return response["rows"][0]["elements"][0]["duration"]["value"] 
+        })
+        .catch(err => {
+          console.error(err);
+        })
+      break;
+  
+    default:
+        
+        seconds = testSeconds.then(response => {
+          console.log(response)
+          return response
+        })
+      break;
+  }
+  
+  
 
   return seconds
 }
