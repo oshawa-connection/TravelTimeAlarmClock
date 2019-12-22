@@ -1,0 +1,22 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    
+    <link rel="stylesheet" type = "text/css" href="/views/style.css">
+    <link rel="shortcut icon" type="image/png" href="/views/alarmClockFavicon.png"/>
+    <title>Google Maps Alarm Clock</title>
+    
+</head>
+<body>
+    <div class="mainContainer">
+    <h1>You are arriving at work at: <%= currentAlarmTime %></h1>
+    <form action="/changeAlarmTime" method='post'>
+        <label for="NewDeadline">Change the time for arriving at work:</label>
+        <input name="NewDeadline" type="time"></input>
+        <button type="submit">Submit</button>
+    </form>
+</div>
+</body>
+</html>

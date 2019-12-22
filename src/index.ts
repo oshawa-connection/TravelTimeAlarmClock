@@ -124,6 +124,8 @@ function createChildProcess() {
 
 var resetFiredToday :Job = schedule.scheduleJob('0 5 * * *', async () => {
   alarmSoundedToday = false;
+  // set cron string for scrape
+  // set cron string for "fire anyway"
 })
 
 var fireAnywayIfAlarmNotFired : Job = schedule.scheduleJob('50 6 * * *', async () => {
