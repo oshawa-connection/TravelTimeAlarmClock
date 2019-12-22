@@ -46,7 +46,7 @@ var scrapeJob:Job = schedule.scheduleJob(cronString, async () => {
   
   leaveTime = new Date()
   leaveTime.setHours(8)
-  leaveTime.setMinutes(0)
+  leaveTime.setMinutes(20)
   
   leaveTime.setSeconds(leaveTime.getSeconds() - travelTimeSeconds);
   timeNow = new Date()
