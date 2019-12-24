@@ -4,6 +4,10 @@ const rp = require('request-promise');
 import { Job} from "node-schedule"
 import { Request} from "request"
 const { spawn } = require('child_process');
+const fs = require('fs');
+
+export function main() {
+
 // You should use autoenv https://github.com/inishchith/autoenv
 var apikey = process.env.apiKey;
 var origin = process.env.originLocation;
@@ -17,17 +21,40 @@ var timeNow: Date;
 var alarmSoundedToday = false;
 // 0/5 6-7 * * 1-5
 
-
+var cronString;
+console.log(process.env.testOrProdEnv)
 switch (process.env.testOrProdEnv) {
   case "test":
-      var cronString = '* * * * *';
+
+      setDefaultCron()
+      cronString = '* * * * *';
       console.log("test")
     break;
 
   default:
-    var cronString = '5,10,15,20,25,30,35,40,45 6-7 * * 1-5';  
+
+    setDefaultCron()
+    
     console.log("production")
     break;
+}
+
+
+async function setDefaultCron() {
+  await fs.readFile('timeSaver.txt',{encoding: 'utf-8'}, function(err, data) {
+    console.log(data)
+    let newtime = data.split(":")
+    leaveTime = new Date()
+    leaveTime.setHours(newtime[0])
+    leaveTime.setMinutes(newtime[1])
+
+    if (newtime[1] > 40) {
+      cronString = `10,20,30,40,50,55 ${newtime[0]-1}-${newtime[0]} * * 1-5`;
+    } else {
+      cronString = `10,20,30,40,50,55 ${newtime[0]-2}-${newtime[0]-1} * * 1-5`;
+    }
+    
+  })
 }
 
 var scrapeJob:Job = schedule.scheduleJob(cronString, async () => {
@@ -43,10 +70,6 @@ var scrapeJob:Job = schedule.scheduleJob(cronString, async () => {
   if (myAlarm) {
     myAlarm.cancel()
   }
-  
-  leaveTime = new Date()
-  leaveTime.setHours(8)
-  leaveTime.setMinutes(20)
   
   leaveTime.setSeconds(leaveTime.getSeconds() - travelTimeSeconds);
   timeNow = new Date()
@@ -124,9 +147,14 @@ function createChildProcess() {
 
 var resetFiredToday :Job = schedule.scheduleJob('0 5 * * *', async () => {
   alarmSoundedToday = false;
+  
+
+    setDefaultCron()
+    scrapeJob.reschedule(cronString)
+  });
   // set cron string for scrape
   // set cron string for "fire anyway"
-})
+
 
 var fireAnywayIfAlarmNotFired : Job = schedule.scheduleJob('50 6 * * *', async () => {
   if (alarmSoundedToday = false) {
@@ -134,3 +162,9 @@ var fireAnywayIfAlarmNotFired : Job = schedule.scheduleJob('50 6 * * *', async (
     alarmSoundedToday = true;
   }
 })
+}
+
+if (require.main === module) {
+  console.log("Main mode")
+  main();
+}

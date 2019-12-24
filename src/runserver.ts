@@ -1,6 +1,7 @@
 import express from "express"
 import request from "request";
 import { Request, Response, NextFunction } from "express";
+import { main as clock } from "./clock";
 const fs = require('fs');
 const spawn = require("child_process").spawn;
 const bodyParser = require('body-parser');
@@ -27,11 +28,16 @@ server.use(function(req, res, next) {
     next();
   });
 
-server.get("/",(req:Request,res:Response) => {
+server.get("/",async (req:Request,res:Response) => {
     console.log("get request")
     
+    let data : string = await fs.readFile('timeSaver.txt',{encoding: 'utf-8'}, function(err, data) {
+        if (err) throw err
+        return data
+    })
+    console.log(data)
     res
-        .render(__dirname + '/../views/test123.ejs',{currentAlarmTime:"8:00"});
+        .render(__dirname + '/../views/test123.ejs',{currentAlarmTime:data});
         //.send("hello there stranger")
 })
 
@@ -54,7 +60,7 @@ server.post("/changeAlarmTime", async (req:Request,res:Response) => {
 
 server.listen(port, hostname, () => {
     console.log(`Server running at http://${hostname}:${port}/`);
-    //const pythonProcess = spawn('ts-node',[__dirname + "/../childProcessCode/cpxFittingCalculator.py"]);
+    clock()
     //notify()
     //updateDaysLeft()
   });
