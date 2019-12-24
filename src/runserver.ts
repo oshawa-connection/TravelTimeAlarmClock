@@ -30,15 +30,15 @@ server.use(function(req, res, next) {
 
 server.get("/",async (req:Request,res:Response) => {
     console.log("get request")
-    
-    let data : string = await fs.readFile('timeSaver.txt',{encoding: 'utf-8'}, function(err, data) {
+    var data :string
+    fs.readFile('timeSaver.txt',{encoding: 'utf-8'}, function(err, data) {
         if (err) throw err
-        return data
+        console.log("in")
+        console.log(data)
+        res
+            .render(__dirname + '/../views/test123.ejs',{currentAlarmTime:data});    
     })
-    console.log(data)
-    res
-        .render(__dirname + '/../views/test123.ejs',{currentAlarmTime:data});
-        //.send("hello there stranger")
+
 })
 
 server.post("/changeAlarmTime", async (req:Request,res:Response) => {

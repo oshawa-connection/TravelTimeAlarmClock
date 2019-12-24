@@ -27,7 +27,7 @@ switch (process.env.testOrProdEnv) {
   case "test":
 
       setDefaultCron()
-      cronString = '* * * * *';
+      //cronString = '* * * * *';
       console.log("test")
     break;
 
