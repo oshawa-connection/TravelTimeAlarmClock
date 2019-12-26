@@ -53,7 +53,7 @@ async function setDefaultCron() {
     } else {
       cronString = `10,20,30,40,50,55 ${newtime[0]-2}-${newtime[0]-1} * * 1-5`;
     }
-    
+    console.log(cronString)
   })
 }
 

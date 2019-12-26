@@ -1,7 +1,7 @@
 {
   "name": "AlarmClock",
   "version": "1.0.2",
-  "description": "",
+  "description": "asd",
   "main": "index.js",
   "scripts": {
     "start": "ts-node src/runserver.ts",
